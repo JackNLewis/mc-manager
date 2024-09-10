@@ -8,7 +8,7 @@ interface ProfileProps {
 
 export default function ProfileRow({ name, imageUrl, isOnline }: ProfileProps = { name: "John Doe", imageUrl: "/placeholder.svg?height=40&width=40", isOnline: true }) {
   return (
-    <div className="flex items-center space-x-4 p-4 bg-card rounded-lg shadow-sm">
+    <div className="flex items-center space-x-4 p-4 bg-card rounded-lg rounded-lg border text-card-foreground shadow-sm">
       <Avatar className="h-12 w-12">
         <AvatarImage src={imageUrl} alt={name} />
         <AvatarFallback>{name.split(' ').map(n => n[0]).join('').toUpperCase()}</AvatarFallback>
