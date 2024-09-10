@@ -10,7 +10,7 @@ export default function UserSection() {
     <ProfileRow isOnline={true} imageUrl="https://avatars.githubusercontent.com/u/124599?v=4" name="test"/>
     <ProfileRow isOnline={true} imageUrl="https://avatars.githubusercontent.com/u/124599?v=4" name="test"/>
     <ProfileRow isOnline={true} imageUrl="https://avatars.githubusercontent.com/u/124599?v=4" name="test"/>
-    <ProfileRow isOnline={true} imageUrl="https://avatars.githubusercontent.com/u/124599?v=4" name="test"/>
+    <ProfileRow isOnline={false} imageUrl="https://avatars.githubusercontent.com/u/124599?v=4" name="test"/>
     </div>
   </div>)
 }
