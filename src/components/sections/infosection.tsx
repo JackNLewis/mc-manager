@@ -3,7 +3,7 @@
 import { RestartButton } from "../restartbutton";
 import { StartButton } from "../startbutton";
 import { StopButton } from "../stopbutton";
-import { ServerStatus } from "../../app/page";
+import { ServerStatus } from "@/lib/enums";
 
 interface InfoSectionProps {
 	ipAddress: string;
