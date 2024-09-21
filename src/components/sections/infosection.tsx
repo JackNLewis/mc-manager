@@ -29,7 +29,7 @@ export default function InfoSection({
 			</div>
 			<div className="flex space-x-3">
 				<RestartButton />
-				<StatusButton serverType={serverStatus} statusCallBack={statusCallBack}/> 
+				<StatusButton status={serverStatus} statusCallBack={statusCallBack}/> 
 			</div>
 		</div>
 	);

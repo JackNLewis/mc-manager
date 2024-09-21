@@ -7,7 +7,7 @@ import { ServerStatus } from "@/lib/enums";
 
 export default function Home() {
 	const [ipAddress, setIPAddress] = useState("");
-	const [serverStatus, setServerStatus] = useState(ServerStatus.Stopped);
+	const [serverStatus, setServerStatus] = useState(ServerStatus.Pending);
 
 	useEffect(() => {
 		fetch(
@@ -27,6 +27,8 @@ export default function Home() {
 						break;
 				}
 				setServerStatus(data.status.Code);
+
+
 			})
 			.catch((err) => console.error(err));
 	});

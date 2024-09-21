@@ -1,17 +1,51 @@
 import { Button } from "@/components/ui/button"
 import { ServerStatus } from "@/lib/enums";
+import { useEffect } from "react";
 
 interface ButtonProp {
-  serverType: ServerStatus,
+  status: ServerStatus,
   statusCallBack: (status: ServerStatus)  => void;
 }
 
-export default function StatusButton({serverType, statusCallBack} : ButtonProp) {
+export default function StatusButton({status: serverType, statusCallBack} : ButtonProp) {
+  useEffect(() => {
+    console.log('use effect');
+    if (shouldPoll(serverType)){
+      console.log('should poll')
+      const intervalId = setInterval(() => {
+        
+        fetch(
+          "https://nunkx5xpka.execute-api.eu-west-2.amazonaws.com/default/GetMCServerDetails",
+        )
+          .then((response) => response.json())
+          .then((data) => {           
+            statusCallBack(data.status.Code);
+          })
+          .catch((err) => console.error(err));
+
+      }, 2500); // Poll every 2.5 seconds
+     
+      return () => {
+        clearInterval(intervalId);
+      };
+    } 
+  }, [serverType]);
+
+
   return (
     <>
       {getButton(serverType, statusCallBack )}
     </>
   )
+}
+
+function shouldPoll(status : ServerStatus) : boolean{
+  console.log(status);
+  if (status === ServerStatus.Stopped || status === ServerStatus.Running){
+    console.log(status);
+    return false;
+  }
+  return true;
 }
 
 function getButton(serverType : ServerStatus, callback: (status: ServerStatus)  => void){
@@ -25,8 +59,6 @@ function getButton(serverType : ServerStatus, callback: (status: ServerStatus)  
   }
 }
 
-
-
 function startServer(callback: (status: ServerStatus) => void){
   fetch(
     "https://bowmcmsdia.execute-api.eu-west-2.amazonaws.com/default/StartMinecraftLambda",
@@ -38,10 +70,7 @@ function startServer(callback: (status: ServerStatus) => void){
   )
   .then((response) => response.json())
   .then((data) => {
-    console.log(data)
-    if (data.statusCode){
-      callback(data.statusCode);
-    }
+    callback(ServerStatus.Pending);
   })
   .catch((err) => console.error(err));
 }
@@ -57,7 +86,9 @@ function stopServer(callback:  (status: ServerStatus) => void ){
   )
   .then((response) => response.json())
   .then((data) => {
-    callback(data.code)
-    })
-    .catch((err) => console.error(err));
+    if (data.statusCode){
+      callback(data.statusCode);
+    }
+  })
+  .catch((err) => console.error(err));
 }
