@@ -3,18 +3,29 @@ import { useState, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function LogContainer() {
+interface InfoSectionProps {
+	ipAddress: string;
+}
+
+export function LogContainer({ ipAddress }: InfoSectionProps) {
 	//Public API that will echo messages sent to it back to the client
 
 	const [messageHistory, setMessageHistory] = useState("");
 
-	const { lastMessage } = useWebSocket("ws://localhost:8080/ws");
+
+	
 
 	useEffect(() => {
-		if (lastMessage !== null) {
-			setMessageHistory(messageHistory.concat(lastMessage?.data));
+		if (ipAddress){
+			const { lastMessage } = useWebSocket(`ws://${"18.133.229.253:8080"}/ws`);
+
+			if (lastMessage !== null) {
+				setMessageHistory(messageHistory.concat(lastMessage?.data));
+			}
 		}
-	}, [lastMessage]);
+		
+	}, [messageHistory]);
+	
 
 	return (
 		<div className="w-11/12 h-full mx-auto py-10">

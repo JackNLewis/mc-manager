@@ -4,45 +4,44 @@ import StatSection from "@/components/sections/stats";
 import { LogContainer } from "@/components/logcontainer";
 import { useEffect, useState } from "react";
 import { ServerStatus } from "@/lib/enums";
+import { fetchDetails, SeverDetails } from "@/lib/data";
 
 export default function Home() {
 	const [ipAddress, setIPAddress] = useState("");
 	const [serverStatus, setServerStatus] = useState(ServerStatus.Pending);
 
+
 	useEffect(() => {
-		fetch(
-			"https://nunkx5xpka.execute-api.eu-west-2.amazonaws.com/default/GetMCServerDetails",
-		)
-			.then((response) => response.json())
+		const fetchData = async () => {
+			await fetchDetails()
 			.then((data) => {
-				if (data.ipAddress != null) {
-					setIPAddress(data.ipAddress);
-				}
-				switch (data.status.Code) {
-					case 80: // stopped
-						setServerStatus(ServerStatus.Stopped);
-						break;
-					case 16:
-						setServerStatus(ServerStatus.Running);
-						break;
-				}
-				setServerStatus(data.status.Code);
-
-
-			})
-			.catch((err) => console.error(err));
+				setDetails(data)
+			});	
+		} 
+	
+		fetchData();
 	});
+
+	function setDetails(details: SeverDetails){
+		if (details.status){
+			setServerStatus(details.status);
+		}
+
+		if (details.ipAddress){
+			setIPAddress(details.ipAddress);
+		}
+	}
 
 	return (
 		<div className="w-screen h-screen flex">
 			<div className="w-10/12 h-full">
 				<div className="h-2/6">
-					<InfoSection ipAddress={ipAddress} serverStatus={serverStatus} statusCallBack={(status: ServerStatus) => setServerStatus(status)} />
+					<InfoSection ipAddress={ipAddress} serverStatus={serverStatus} setDetailsCallback={(details: SeverDetails) => setDetails(details)} />
 				</div>
 				<div className="h-1/6">
 					<StatSection />
 				</div>
-				<div className="h-3/6"><LogContainer /></div>
+				<div className="h-3/6"><LogContainer ipAddress={ipAddress} /></div>
 			</div>
 			<div className="w-2/12 h-full">
 				{/* <UserSection /> */}
@@ -50,3 +49,5 @@ export default function Home() {
 		</div>
 	);
 }
+
+
