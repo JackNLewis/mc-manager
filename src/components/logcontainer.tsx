@@ -14,7 +14,7 @@ export function LogContainer({ ipAddress }: InfoSectionProps) {
 
 	useEffect(() => {
 		if (lastMessage !== null) {
-			setMessageHistory(messageHistory + lastMessage.data);
+			setMessageHistory( (message) =>  message + lastMessage.data);
 		}
 	}, [lastMessage]);
 	

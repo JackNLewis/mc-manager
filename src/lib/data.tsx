@@ -11,7 +11,7 @@ export async function fetchDetails() : Promise<SeverDetails>{
       )
     const data = await response.json();
     
-    let res : SeverDetails = new SeverDetails();
+    const res : SeverDetails = new SeverDetails();
 
     if (data.ipAddress){
         res.ipAddress =  data.ipAddress;
