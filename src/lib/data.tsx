@@ -12,12 +12,9 @@ export async function fetchDetails() : Promise<SeverDetails>{
     const data = await response.json();
     
     let res : SeverDetails = new SeverDetails();
-    console.log(res);
-    console.log(data);
 
     if (data.ipAddress){
         res.ipAddress =  data.ipAddress;
-        console.log(data.ipAddress);
     }
 
     if (data.status.Code){

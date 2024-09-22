@@ -8,29 +8,31 @@ interface InfoSectionProps {
 }
 
 export function LogContainer({ ipAddress }: InfoSectionProps) {
-	//Public API that will echo messages sent to it back to the client
-
+	const url = `ws://${ipAddress}:8080/ws`
+	const { lastMessage } =  useWebSocket(url)
 	const [messageHistory, setMessageHistory] = useState("");
 
-
-	
-
 	useEffect(() => {
-		if (ipAddress){
-			const { lastMessage } = useWebSocket(`ws://${"18.133.229.253:8080"}/ws`);
-
-			if (lastMessage !== null) {
-				setMessageHistory(messageHistory.concat(lastMessage?.data));
-			}
+		if (lastMessage !== null) {
+			setMessageHistory(messageHistory + lastMessage.data);
 		}
-		
-	}, [messageHistory]);
+	}, [lastMessage]);
 	
-
 	return (
 		<div className="w-11/12 h-full mx-auto py-10">
 			<ScrollArea className="flex bg-card w-full h-full rounded-lg rounded-lg border text-card-foreground shadow-sm whitespace-pre p-4">
 				{messageHistory}
+			</ScrollArea>
+		</div>
+	);
+}
+
+
+export function LogContainerEmpty() {
+	return (
+		<div className="w-11/12 h-full mx-auto py-10">
+			<ScrollArea className="flex bg-card w-full h-full rounded-lg rounded-lg border text-card-foreground shadow-sm whitespace-pre p-4">
+				<p className="text-red-200">No Logs Available</p>
 			</ScrollArea>
 		</div>
 	);

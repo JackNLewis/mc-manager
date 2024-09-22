@@ -1,7 +1,7 @@
 "use client";
 import InfoSection from "@/components/sections/infosection";
 import StatSection from "@/components/sections/stats";
-import { LogContainer } from "@/components/logcontainer";
+import { LogContainer, LogContainerEmpty } from "@/components/logcontainer";
 import { useEffect, useState } from "react";
 import { ServerStatus } from "@/lib/enums";
 import { fetchDetails, SeverDetails } from "@/lib/data";
@@ -9,7 +9,6 @@ import { fetchDetails, SeverDetails } from "@/lib/data";
 export default function Home() {
 	const [ipAddress, setIPAddress] = useState("");
 	const [serverStatus, setServerStatus] = useState(ServerStatus.Pending);
-
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -23,11 +22,12 @@ export default function Home() {
 	});
 
 	function setDetails(details: SeverDetails){
-		if (details.status){
+		
+		if (details.status !== serverStatus){
 			setServerStatus(details.status);
 		}
 
-		if (details.ipAddress){
+		if (details.ipAddress !== ipAddress ){
 			setIPAddress(details.ipAddress);
 		}
 	}
@@ -41,7 +41,12 @@ export default function Home() {
 				<div className="h-1/6">
 					<StatSection />
 				</div>
-				<div className="h-3/6"><LogContainer ipAddress={ipAddress} /></div>
+				<div className="h-3/6">
+					{ipAddress && serverStatus == ServerStatus.Running ?
+						<LogContainer ipAddress={ipAddress} /> :
+						<LogContainerEmpty />
+					}
+				</div>
 			</div>
 			<div className="w-2/12 h-full">
 				{/* <UserSection /> */}

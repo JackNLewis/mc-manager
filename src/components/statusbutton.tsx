@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { ServerStatus } from "@/lib/enums";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SeverDetails, fetchDetails } from "@/lib/data"
 
 interface ButtonProp {
@@ -9,13 +9,17 @@ interface ButtonProp {
 }
 
 export default function StatusButton({status: serverType, setDetailsCallback} : ButtonProp) {
+  const [hasRequestSent, setRequestSent] = useState(false);
   useEffect(() => {
-    if (shouldPoll(serverType)){
+    if (shouldPoll(serverType) || hasRequestSent){
       const intervalId = setInterval(() => {
         
         const fetchData = async () => {
-          // const details = await fetchDetails();
-          // setDetailsCallback(details);
+          const details = await fetchDetails();
+          if (details.status == ServerStatus.Running || details.status == ServerStatus.Stopped){
+            setRequestSent(false);
+          }
+          setDetailsCallback(details);
         }
         fetchData();
 
@@ -25,12 +29,12 @@ export default function StatusButton({status: serverType, setDetailsCallback} : 
         clearInterval(intervalId);
       };
     } 
-  }, [serverType]);
+  }, [serverType, hasRequestSent]);
 
 
   return (
     <>
-      {getButton(serverType, setDetailsCallback)}
+      {getButton(serverType,hasRequestSent,  setRequestSent)}
     </>
   )
 }
@@ -42,22 +46,19 @@ function shouldPoll(status : ServerStatus) : boolean{
   return true;
 }
 
-function getButton(serverType : ServerStatus, callback: (details: SeverDetails) => void){
+function getButton(serverType : ServerStatus, hasRequestSent: boolean, setRequestSent: (hasSent: boolean) => void){
   switch (serverType){
     case ServerStatus.Stopped:
-      return <Button className="bg-green-500 hover:bg-green-400" onClick={() => startServer(callback)}>Start</Button> 
+      return <Button className="bg-green-500 hover:bg-green-400" onClick={() => startServer(setRequestSent)} disabled={hasRequestSent}>Start</Button> 
     case ServerStatus.Running:
-      return <Button className="bg-red-500 hover:bg-red-400" onClick={() => stopServer(callback)}>Stop</Button>; 
+      return <Button className="bg-red-500 hover:bg-red-400" onClick={() => stopServer(setRequestSent)} disabled={hasRequestSent}>Stop</Button>; 
     default:
       return <Button variant={"secondary"}>Pending</Button>
   }
 }
 
-function startServer(setDetailsCallback: (details: SeverDetails) => void){
-  let details: SeverDetails = new SeverDetails();
-  details.status = ServerStatus.Pending;
-  setDetailsCallback(details);
-
+function startServer(setRequestSent: (hasSent: boolean) => void){
+  setRequestSent(true);
   fetch(
     "https://bowmcmsdia.execute-api.eu-west-2.amazonaws.com/default/StartMinecraftLambda",
     {
@@ -66,20 +67,11 @@ function startServer(setDetailsCallback: (details: SeverDetails) => void){
       },
     },
   )
-  .then((response) => {
-    if (!response.ok){
-      details.status = ServerStatus.Stopped;
-    }
-    setDetailsCallback(details);
-  })
   .catch((err) => console.error(err));
 }
 
-function stopServer(setDetailsCallback: (details: SeverDetails) => void ){
-  let details: SeverDetails = new SeverDetails();
-  details.status = ServerStatus.Pending;
-  setDetailsCallback(details);
-
+function stopServer(setRequestSent: (hasSent: boolean) => void ){
+  setRequestSent(true);
   fetch(
     "https://bowmcmsdia.execute-api.eu-west-2.amazonaws.com/default/StopMinecraftServer",
     {
@@ -88,11 +80,5 @@ function stopServer(setDetailsCallback: (details: SeverDetails) => void ){
       },
     },
   )
-  .then((response) => {
-    if (!response.ok){
-      details.status = ServerStatus.Stopped;
-    }
-    setDetailsCallback(details);
-  })
   .catch((err) => console.error(err));
 }
