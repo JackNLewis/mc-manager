@@ -12,22 +12,20 @@ export default function Home() {
 
 	useEffect(() => {
 		const fetchData = async () => {
-			await fetchDetails()
-			.then((data) => {
-				setDetails(data)
-			});	
-		} 
-	
+			await fetchDetails().then((data) => {
+				setDetails(data);
+			});
+		};
+
 		fetchData();
 	});
 
-	function setDetails(details: SeverDetails){
-		
-		if (details.status !== serverStatus){
+	function setDetails(details: SeverDetails) {
+		if (details.status !== serverStatus) {
 			setServerStatus(details.status);
 		}
 
-		if (details.ipAddress !== ipAddress ){
+		if (details.ipAddress !== ipAddress) {
 			setIPAddress(details.ipAddress);
 		}
 	}
@@ -36,23 +34,24 @@ export default function Home() {
 		<div className="w-screen h-screen flex">
 			<div className="w-10/12 h-full">
 				<div className="h-2/6">
-					<InfoSection ipAddress={ipAddress} serverStatus={serverStatus} setDetailsCallback={(details: SeverDetails) => setDetails(details)} />
+					<InfoSection
+						ipAddress={ipAddress}
+						serverStatus={serverStatus}
+						setDetailsCallback={(details: SeverDetails) => setDetails(details)}
+					/>
 				</div>
 				<div className="h-1/6">
 					<StatSection />
 				</div>
 				<div className="h-3/6">
-					{ipAddress && serverStatus == ServerStatus.Running ?
-						<LogContainer ipAddress={ipAddress} /> :
+					{ipAddress && serverStatus == ServerStatus.Running ? (
+						<LogContainer ipAddress={ipAddress} />
+					) : (
 						<LogContainerEmpty />
-					}
+					)}
 				</div>
 			</div>
-			<div className="w-2/12 h-full">
-				{/* <UserSection /> */}
-			</div>
+			<div className="w-2/12 h-full">{/* <UserSection /> */}</div>
 		</div>
 	);
 }
-
-
